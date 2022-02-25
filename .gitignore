@@ -1,0 +1,8 @@
+# created by virtualenv automatically
+/pyvenv.cfg
+/Scripts/
+/repository/
+/Lib/
+/log/debug.log
+/log/error.log
+/click_house_data.json

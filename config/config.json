@@ -1,0 +1,22 @@
+{
+  "bot_name": "ControllerTelegramBot",
+  "telegram_controller": {
+    "token": "5281042924:AAEGuj3sddLcWniZdZJo8NL5Y09rFbDGDiU",
+    "name": "Controller",
+    "username": "CryptoBotControllerBot",
+    "channel_id": "-721779109"
+  },
+  "telegram": {
+    "token": "2137599085:AAGh8yURj1mCWTwFzPly1agq3tOwuPYAY74",
+    "url": "https://api.telegram.org/bot",
+    "channel_id": "-1001674454874"
+  },
+  "mongodb": {
+    "mongo_base_data": "C:/drivers/data/mongo_base_data.txt",
+    "local_mongodb": true,
+    "mongo_base_my_local": "mongodb://127.0.0.1:27017"
+  },
+  "using_db": [
+    "mongo"
+  ]
+}
