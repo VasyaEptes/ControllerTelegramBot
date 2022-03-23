@@ -2,3 +2,4 @@ pymongo
 dnspython
 requests
 python-telegram-bot
+telethon

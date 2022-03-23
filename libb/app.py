@@ -17,13 +17,26 @@ class App:
         self.config = self.read_json(abs_path_config)
         self.log_error = logger(name='error', mode='w')
         self.log_debug = logger(name='debug', mode='w')
+        my_node = platform.uname().node
+        if my_node == 'Z1' or my_node == 'alexei':
+            self.bot_name = self.config.get('bot_name')
+        else:
+            self.bot_name = self.config.get('bot_name')
+        if self.config.get('telegram_client'):
+            self.app_id = self.config['telegram_client'].get('app_id')
+            self.app_hash = self.config['telegram_client'].get('api_hash')
+        else:
+            self.app_id = None
+            self.app_hash = None
+        if self.app_id is None or self.app_hash is None:
+            self.status = 1
         if 'mongo' in self.config['using_db']:
-            mongo_base, enable_ssl, self.status = detect_base(self)
+            mongo_base, enable_ssl, self.status = _detect_base(self)
             self.cluster = MongoClient(mongo_base, tls=enable_ssl, tlsAllowInvalidCertificates=True)
             self.db = self.cluster.Funds
             self.collection = self.db.coins
         if 'clickhouse' in self.config['using_db']:
-            self.host, self.auth, self.status = self._detect_clickhouse_base()
+            self.host, self.auth, self.status = _detect_clickhouse_base(self)
 
     def sms(self, text, lang='en'):
         try:
@@ -60,39 +73,40 @@ class App:
         except Exception as e:
             print(e)
 
-    def _detect_clickhouse_base(self):
-        my_node = platform.uname().node
-        auth = None
-        if my_node == 'Z1':
-            try:
-                data = self.read_json(self.config['clickhouse']['click_house_data'])
-                host = data['url']
-                auth = {'user': data['user'], 'password': data['password']}
-                if auth['user'] is None:
-                    auth = None
-                if 'url' not in data or "198." not in data['url']:
-                    raise Exception
-                else:
-                    print('global base adress has been detected')
-            except:
-                host = self.config['clickhouse']['local']
-                print('my local base will be used')
-        else:
-            if self.config['clickhouse']['is_local'] is True:
-                host = self.config['clickhouse']['local']
+
+def _detect_clickhouse_base(self):
+    my_node = platform.uname().node
+    auth = None
+    if my_node == 'Z1':
+        try:
+            data = self.read_json(self.config['clickhouse']['click_house_data'])
+            host = data['url']
+            auth = {'user': data['user'], 'password': data['password']}
+            if auth['user'] is None:
+                auth = None
+            if 'url' not in data or "198." not in data['url']:
+                raise Exception
             else:
-                data = self.read_json(self.config['clickhouse']['click_house_data'])
-                host = data['url']
-                auth = {'user': data['user'], 'password': data['password']}
-                if auth['user'] is None:
-                    auth = None
-                if 'url' not in data or "198." not in data['url']:
-                    print('base adress incorrect')
-                    self.status = 1
-        return host, auth, self.status
+                print('global base adress has been detected')
+        except:
+            host = self.config['clickhouse']['local']
+            print('my local base will be used')
+    else:
+        if self.config['clickhouse']['is_local'] is True:
+            host = self.config['clickhouse']['local']
+        else:
+            data = self.read_json(self.config['clickhouse']['click_house_data'])
+            host = data['url']
+            auth = {'user': data['user'], 'password': data['password']}
+            if auth['user'] is None:
+                auth = None
+            if 'url' not in data or "198." not in data['url']:
+                print('base adress incorrect')
+                self.status = 1
+    return host, auth, self.status
 
 
-def detect_base(self):
+def _detect_base(self):
     enable_ssl = False
     my_node = platform.uname().node
     if my_node == 'Z1':

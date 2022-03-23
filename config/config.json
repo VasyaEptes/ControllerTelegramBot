@@ -1,10 +1,16 @@
 {
-  "bot_name": "ControllerTelegramBot",
+  "bot_name_test": "@alfa_Web3Space_bot",
+  "bot_name": "@Web3Space_bot",
   "telegram_controller": {
     "token": "5281042924:AAEGuj3sddLcWniZdZJo8NL5Y09rFbDGDiU",
     "name": "Controller",
     "username": "CryptoBotControllerBot",
     "channel_id": "-721779109"
+  },
+  "telegram_client": {
+    "app_id": 10652047,
+    "api_hash": "e84e90e5239a87e850ea4b5e3768ca3b",
+    "id": 1002631943
   },
   "telegram": {
     "token": "2137599085:AAGh8yURj1mCWTwFzPly1agq3tOwuPYAY74",
