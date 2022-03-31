@@ -2,6 +2,7 @@
 /pyvenv.cfg
 /Scripts/
 /repository/
+/resources
 /Lib/
 /log/debug.log
 /log/error.log

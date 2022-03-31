@@ -33,7 +33,11 @@ class App:
         if 'mongo' in self.config['using_db']:
             mongo_base, enable_ssl, self.status = _detect_base(self)
             self.cluster = MongoClient(mongo_base, tls=enable_ssl, tlsAllowInvalidCertificates=True)
-            self.db = self.cluster.Funds
+            my_node = platform.uname().node
+            if my_node == 'Z1':
+                self.db = self.cluster.Funds
+            else:
+                self.db = self.cluster.CoinsData
             self.collection = self.db.coins
         if 'clickhouse' in self.config['using_db']:
             self.host, self.auth, self.status = _detect_clickhouse_base(self)
@@ -123,6 +127,7 @@ def _detect_base(self):
     else:
         if self.config['mongodb']['local_mongodb'] is True:
             mongo_base = self.config['mongodb']['mongo_base_my_local']
+            print('my local base will be used')
         else:
             with open(self.config['mongodb']['mongo_base_data'], 'r', encoding='utf-8-sig') as g:
                 mongo_base = g.read().strip()
@@ -137,7 +142,7 @@ def _detect_base(self):
 def logger(name, mode='a'):
     log = logging.getLogger(name=name)
     handler = logging.FileHandler(f"{path}/log/{name}.log", mode=mode)
-    formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(fmt='[X] %(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)
     if name == 'error':
         log.setLevel(logging.ERROR)

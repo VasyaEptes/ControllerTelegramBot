@@ -1,5 +1,5 @@
 pymongo
 dnspython
 requests
-python-telegram-bot
+# python-telegram-bot
 telethon

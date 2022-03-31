@@ -1,6 +1,7 @@
 {
   "bot_name_test": "@alfa_Web3Space_bot",
   "bot_name": "@Web3Space_bot",
+  "my_bot_name": "ConrtollerTelegramBot",
   "telegram_controller": {
     "token": "5281042924:AAEGuj3sddLcWniZdZJo8NL5Y09rFbDGDiU",
     "name": "Controller",
