@@ -1,9 +1,8 @@
 import libb.app as app_
 import sys
 import asyncio
-import time
-import libb.messager as messanger
-# import libb.messager_2 as messanger
+import libb.message_handler as handler
+from libb.pyrogram_messanger import messanger
 
 
 async def main():
@@ -11,9 +10,7 @@ async def main():
     if app.status != 0:
         app.sms(f"{app.config['bot_name']}. База не подключена")
         sys.exit()
-    await messanger.run(app=app)
-    # messanger.run(app=app)
-
+    await asyncio.gather(handler.run(app=app), messanger(app=app))
 
 if __name__ == '__main__':
     asyncio.run(main())

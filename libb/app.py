@@ -41,6 +41,9 @@ class App:
             self.collection = self.db.coins
         if 'clickhouse' in self.config['using_db']:
             self.host, self.auth, self.status = _detect_clickhouse_base(self)
+        self.status_next = False
+        self.status_work = True
+        self.client = None
 
     def sms(self, text, lang='en'):
         try:

@@ -3,3 +3,5 @@ dnspython
 requests
 # python-telegram-bot
 telethon
+pyrogram
+tgcrypto
