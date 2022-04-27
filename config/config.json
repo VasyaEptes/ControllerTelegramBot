@@ -24,6 +24,5 @@
     "mongo_base_my_local": "mongodb://127.0.0.1:27017"
   },
   "using_db": [
-    "mongo"
   ]
 }

@@ -48,12 +48,10 @@ async def run(app):
             elif 'Сравнение Топ 15' in response_message:
                 await click_loop(app=app, client=client, event=event, texts=['▶', '◀'],
                                  count_check_string=6)
-                app.status_next = True
                 await asyncio.sleep(1)
             elif 'Фонды 7дн 30дн Баллы Тикер' in response_message or 'Фонды сегодня' in response_message or\
-                    '📶 Категории' in response_message or 'Топ токенов с эмиссией' in response_message:
+                    'Категории' in response_message or 'Топ токенов с эмиссией' in response_message:
                 await click_loop(app=app, client=client, event=event, texts=['▶', '◀'], count_check_string=4)
-                app.status_next = True
                 await asyncio.sleep(1)
             elif 'Топ токенов с капитализацией' in response_message:
                 await click_loop(app=app, client=client, event=event, texts=['▶', '◀'], count_check_string=5)
@@ -130,58 +128,9 @@ async def click_loop(app, client, event, texts, count_check_string=0):
 async def data_processing(app, response):
     app.work_status = True
     if 'Топ 100' in response:
-        try:
-            message_list = response.split('\n')
-            if len(message_list) > 6:
-                check_line = message_list[4].split() + [message_list[5].split(':')[-1].strip()]
-                data = {'symbol': check_line[2].split('/')[-1].replace(']', ''),
-                        'funds_count': int(check_line[3])}
-                capitalization = check_line[4]
-                category = check_line[5]
-                if capitalization != 'N/A':
-                    capitalization_0 = float(capitalization)
-                    coef_str = check_line[5]
-                    if coef_str == 'млрд.':
-                        coef = 1_000_000_000
-                    elif coef_str == 'млн.':
-                        coef = 1_000_000
-                    elif coef_str == 'тыс.':
-                        coef = 1000
-                    else:
-                        coef = 1
-                    capitalization = int(capitalization_0 * coef)
-                    category = check_line[6]
-                data['capitalization'] = capitalization
-                p = re.compile(r'/\d+ (.*)')
-                try:
-                    category = p.findall(category)[0]
-                except:
-                    category = '-99'
-                data['category'] = category
-                coin = app.collection.find_one({'symbol': data['symbol']})
-                try:
-                    status = True
-                    while status is True:
-                        if data['capitalization'] != int(coin['capitalization']):
-                            status = False
-                        if data['category'] != coin['category']:
-                            status = False
-                        if data['funds_count'] != len(coin['fund']):
-                            status = False
-                        break
-                    if status is False:
-                        coin_log = {'symbol': coin['symbol'], 'funds_count': len(coin['fund']), 'capitalization':
-                                    int(coin['capitalization']), 'category': coin['category']}
-                        app.log_error.error(f'Incorrect data for the query "Топ 100". Symbol: {data["symbol"]}\n\n'
-                                            f'data from telegram bot: {data}\ndata from db: {coin_log}\n{"*"*10}')
-                        app.work_status = False
-                except Exception as e:
-                    app.log_error.error(f'{e}\n{coin}\n', exc_info=True)
-            else:
-                app.log_error.error(f'Incorrect data for the query "Топ 100"')
-                app.work_status = False
-        except Exception as e:
-            app.log_error.error(f'{e}', exc_info=True)
+        message_list = response.split('\n')
+        if len(message_list) > 6:
+            app.log_error.error(f'Incorrect data for the query "Топ 100"')
             app.work_status = False
     if 'Статистика рынка' in response:
         if 'Цена BTC' not in response or 'Цена ETH' not in response:
@@ -205,93 +154,13 @@ async def data_processing(app, response):
             app.work_status = False
     if 'Топ токенов с эмиссией' in response:
         message_list = response.split('\n')
-        status = True
-        try:
-            if len(message_list) > 6:
-                check_line = message_list[4].split() + [message_list[5].split(':')[-1].strip()]
-                data = {'symbol': check_line[3].split('/')[-1].replace(']', ''),
-                        'funds_count': int(check_line[2]), 'coef_issue': float(check_line[1].replace('%', ''))}
-                p = re.compile(r'/\d+ (.*)')
-                category = check_line[4]
-                try:
-                    category = p.findall(category)[0]
-                except:
-                    category = '-99'
-                data['category'] = category
-                coin = app.collection.find_one({'symbol': data['symbol']})
-                try:
-                    while status is True:
-                        if data['coef_issue'] != float(coin['coef issue']):
-                            status = False
-                        if data['category'] != coin['category']:
-                            status = False
-                        if data['funds_count'] != len(coin.get('fund')):
-                            status = False
-                        break
-                    if status is False:
-                        coin_log = {'symbol': coin['symbol'], 'funds_count': len(coin['fund']), 'coef_issue':
-                                    float(coin['coef issue']), 'category': coin['category']}
-                        app.log_error.error(f'Incorrect data for the query "Топ токенов с эмиссией 90-100 %". Symbol: '
-                                            f'{data["symbol"]}\n\ndata from telegram bot: {data}\ndata from db: '
-                                            f'{coin_log}\n{"*" * 10}')
-                        app.work_status = False
-                except Exception as e:
-                    app.log_error.error(f'{e}\n{coin}\n', exc_info=True)
-            else:
-                app.log_error.error(f'Incorrect data for the query "Топ токенов с эмиссией 90-100 %"')
-                app.work_status = False
-        except Exception as e:
-            app.log_error.error(f'{e}', exc_info=True)
+        if len(message_list) < 6:
+            app.log_error.error(f'Incorrect data for the query "Топ токенов с эмиссией 90-100 %"')
             app.work_status = False
     if 'Топ токенов с капитализацией' in response:
         message_list = response.split('\n')
-        try:
-            if len(message_list) > 7:
-                check_line = message_list[5].split() + [message_list[6].split(':')[-1].strip()]
-                data = {'symbol': check_line[4].split('/')[-1].replace(']', ''),
-                        'funds_count': int(check_line[3])}
-                capitalization_0 = float(check_line[1])
-                coef_str = check_line[2]
-                if coef_str == 'млрд.':
-                    coef = 1_000_000_000
-                elif coef_str == 'млн.':
-                    coef = 1_000_000
-                else:
-                    coef = 1
-                capitalization = int(capitalization_0 * coef)
-                data['capitalization'] = capitalization
-                p = re.compile(r'/\d+ (.*)')
-                category = check_line[4]
-                try:
-                    category = p.findall(category)[0]
-                except:
-                    category = '-99'
-                data['category'] = category
-                coin = app.collection.find_one({'symbol': data['symbol']})
-                try:
-                    status = True
-                    while status is True:
-                        if data['capitalization'] != float(coin['capitalization']):
-                            status = False
-                        if data['category'] != coin['category']:
-                            status = False
-                        if data['funds_count'] != len(coin['fund']):
-                            status = False
-                        break
-                    if status is False:
-                        coin_log = {'symbol': coin['symbol'], 'funds_count': len(coin['fund']), 'capitalization':
-                                    int(coin['capitalization']), 'category': coin['category']}
-                        app.log_error.error(f'Incorrect data for the query "Топ токенов с капитализацией".'
-                                            f' Symbol: {data["symbol"]}\n\ndata from telegram bot: {data}\ndata from db: '
-                                            f'{coin_log}\n{"*" * 10}')
-                        app.work_status = False
-                except Exception as e:
-                    app.log_error.error(f'{e}\n{coin}\n', exc_info=True)
-            else:
-                app.log_error.error(f'Incorrect data for the query "ТТоп токенов с капитализацией"')
-                app.work_status = False
-        except Exception as e:
-            app.log_error.error(f'{e}', exc_info=True)
+        if len(message_list) < 7:
+            app.log_error.error(f'Incorrect data for the query "ТТоп токенов с капитализацией"')
             app.work_status = False
     if 'Список фондов' in response:
         if len(response.split('\n')) < 17:
