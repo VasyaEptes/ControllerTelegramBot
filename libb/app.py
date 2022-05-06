@@ -41,9 +41,13 @@ class App:
             self.collection = self.db.coins
         if 'clickhouse' in self.config['using_db']:
             self.host, self.auth, self.status = _detect_clickhouse_base(self)
-        self.status_next = False
+        self.status_next = True
         self.status_work = True
+        self.seq = None
+        self.waiting = None
+        self.next_push = None
         self.client = None
+        self.next_click = False
 
     def sms(self, text, lang='en'):
         try:
@@ -144,7 +148,7 @@ def _detect_base(self):
 
 def logger(name, mode='a'):
     log = logging.getLogger(name=name)
-    handler = logging.FileHandler(f"{path}/log/{name}.log", mode=mode)
+    handler = logging.FileHandler(f"{path}/log/{name}.log", mode=mode, encoding='utf-8')
     formatter = logging.Formatter(fmt='[X] %(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)
     if name == 'error':

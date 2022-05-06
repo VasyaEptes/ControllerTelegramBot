@@ -14,9 +14,9 @@
     "id": 1002631943
   },
   "telegram": {
-    "token": "2137599085:AAGh8yURj1mCWTwFzPly1agq3tOwuPYAY74",
+    "token": "5281042924:AAEGuj3sddLcWniZdZJo8NL5Y09rFbDGDiU",
     "url": "https://api.telegram.org/bot",
-    "channel_id": "-1001674454874"
+    "channel_id": "-784590492"
   },
   "mongodb": {
     "mongo_base_data": "C:/drivers/data/mongo_base_data.txt",
